@@ -11,6 +11,11 @@
     margin-left: auto;
 }
 
+.ta-btn-md.postalBox{
+    display:flex;
+    align-items: flex-end;
+}
+
 .ta-btn-md {
     padding: 0.45rem 3.75rem;
     margin-left: auto;
@@ -34,4 +39,23 @@
 
 .ta-address-none {
     text-align: center;
+}
+
+.box-account.box-info .modal-dialog .modal-content .modal-body .row.mb-3{
+   margin-top:3%; 
+}
+
+.box-account.box-info .modal-dialog .modal-content .modal-body{
+    width:90%;
+    margin :auto;
+}
+
+.box-account.box-info .modal-dialog .modal-content{
+    width:130%;
+}
+
+.box-account.box-info .modal-dialog.modal-dialog-scrollable{
+    margin-right:auto;
+    margin-left:auto;
+    margin-top:15%;
 }

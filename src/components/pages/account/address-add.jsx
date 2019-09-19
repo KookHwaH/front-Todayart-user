@@ -20,7 +20,9 @@ class AddressAdd extends Component {
             addresses: [],
             totalCount: -1,
 
-            isAddressSelected: {}
+            isAddressSelected: {},
+
+            open:false
         }
 
         // 검색
@@ -31,6 +33,14 @@ class AddressAdd extends Component {
         this.addressDetailRegInput = React.createRef();
         this.postCodeRegInput = React.createRef();
     }
+
+    onOpenModal = () => {
+        this.setState({ open: true });
+    };
+
+    onCloseModal = () => {
+        this.setState({ open: false });
+    };
 
     render() {
         // 유효성에 관련된 메시지 CSS
@@ -229,6 +239,22 @@ class AddressAdd extends Component {
                                                 <div className="row">
                                                     <div className="col-sm-8 mb-3">
                                                         <input type="text"
+                                                                className="form-control"
+                                                                name="postCodeReg"
+                                                                ref={this.postCodeRegInput}
+                                                                placeholder="우편번호를 선택 해 주세요"
+                                                                required
+                                                                readOnly
+                                                        />
+                                                    </div>
+                                                    <div className="col-sm-4">
+                                                        <button type="button" data-toggle="modal" data-target="#searchPostalNumber" 
+                                                        className="btn btn-solid ta-btn-md postalBox" onClick={()=>this.onOpenModal}>우편번호검색</button>
+                                                    </div>
+                                                </div>
+                                                <div className="row">
+                                                    <div className="col-sm-12 mb-3">
+                                                        <input type="text"
                                                                className="form-control"
                                                                name="addressReg"
                                                                placeholder="배송지 주소를 선택 해 주세요"
@@ -237,16 +263,7 @@ class AddressAdd extends Component {
                                                                readOnly
                                                         />
                                                     </div>
-                                                    <div className="col-sm-4 mb-3">
-                                                        <input type="text"
-                                                               className="form-control"
-                                                               name="postCodeReg"
-                                                               ref={this.postCodeRegInput}
-                                                               placeholder="우편번호를 선택 해 주세요"
-                                                               required
-                                                               readOnly
-                                                        />
-                                                    </div>
+                                                    
                                                 </div>
                                                 <div className="row mb-3">
                                                     <div className="col-sm-12">
@@ -265,61 +282,81 @@ class AddressAdd extends Component {
                                                     </div>
                                                 </div>
                                             </form>
-                                            <form onSubmit={e => onSearch(e)}>
-                                                <div className="row mb-3">
-                                                    <div className="col-sm-12">
-                                                        <div className="input-group form-group-control">
-                                                            <input type="text"
-                                                                   className={`form-control ${inputClassNameHelper(this.state.isAddressValid)}`}
-                                                                   name="address"
-                                                                   placeholder="배송지 주소를 입력 해 주세요"
-                                                                   ref={this.addressInput}
-                                                                   required
-                                                                   onChange={e => validateAddress(e.target.value)}
-                                                            />
-                                                            <div className="input-group-append">
-                                                                <button
-                                                                    className="btn btn-outline-secondary btn-input-group-bottom"
-                                                                    type="submit">검색</button>
+                                            
+                                            <div className="modal fade" id="searchPostalNumber" tabIndex="-1" role="dialog" aria-labelledby="searchPostalNumberTitle" aria-hidden="true">
+                                                <div className="modal-dialog modal-dialog-scrollable" role="document">
+                                                    <div className="modal-content address_list">
+                                                    <div className="modal-header">
+                                                        <h5 className="modal-title" id="searchPostalNumberTitle">주소검색</h5>
+                                                        <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div className="modal-body">
+                                                        <form onSubmit={e => onSearch(e)}>
+                                                            <div className="row mb-3">
+                                                                <div className="col-sm-12">
+                                                                    <div className="input-group form-group-control">
+                                                                        <input type="text"
+                                                                            className={`form-control ${inputClassNameHelper(this.state.isAddressValid)}`}
+                                                                            name="address"
+                                                                            placeholder="배송지 주소를 입력 해 주세요"
+                                                                            ref={this.addressInput}
+                                                                            required
+                                                                            onChange={e => validateAddress(e.target.value)}
+                                                                        />
+                                                                        <div className="input-group-append">
+                                                                            <button
+                                                                                className="btn btn-outline-secondary btn-input-group-bottom"
+                                                                                type="submit">검색</button>
+                                                                        </div>
+                                                                    </div>
+                                                                    <FormCheckText sendMsg={this.state.addressValidMsg} isCheck={this.state.isSubmitAddressValid} />
+                                                                </div>
+                                                            </div>
+                                                        </form>
+                                                        <div className="ta-address-result-box">
+                                                            <div className="row">
+                                                                <div className="col-sm-12">
+                                                                    <div className="table-responsive">
+                                                                        <table className="table table-responsive-xs">
+                                                                            <thead>
+                                                                                <tr>
+                                                                                    <th>No</th>
+                                                                                    <th>주소</th>
+                                                                                    <th>우편번호</th>
+                                                                                </tr>
+                                                                            </thead>
+                                                                            <tbody>
+                                                                                {this.state.totalCount <= 0 ? <tr>
+                                                                                    <td colSpan="3" className="ta-address-none">검색결과가 존재하지 않습니다.</td>
+                                                                                </tr> : this.state.addresses.map((address, index) => {
+                                                                                    return (
+                                                                                        <tr className="ta-address-tr"
+                                                                                            key={index}
+                                                                                            onClick={() => onSelected(index)}
+                                                                                            data-dismiss="modal">
+                                                                                            <td>{index + 1}</td>
+                                                                                            <td>{address.roadAddr}<br/><small>{address.jibunAddr}</small></td>
+                                                                                            <td>{address.zipNo}</td>
+                                                                                        </tr>
+                                                                                    )
+                                                                                })
+                                                                                }
+                                                                            </tbody>
+                                                                        </table>
+                                                                    </div>
+                                                                </div>
                                                             </div>
                                                         </div>
-                                                        <FormCheckText sendMsg={this.state.addressValidMsg} isCheck={this.state.isSubmitAddressValid} />
                                                     </div>
-                                                </div>
-                                            </form>
-                                            <div className="ta-address-result-box">
-                                                <div className="row">
-                                                    <div className="col-sm-12">
-                                                        <div className="table-responsive">
-                                                            <table className="table table-responsive-xs">
-                                                                <thead>
-                                                                    <tr>
-                                                                        <th>No</th>
-                                                                        <th>주소</th>
-                                                                        <th>우편번호</th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody>
-                                                                    {this.state.totalCount <= 0 ? <tr>
-                                                                        <td colSpan="3" className="ta-address-none">검색결과가 존재하지 않습니다.</td>
-                                                                    </tr> : this.state.addresses.map((address, index) => {
-                                                                        return (
-                                                                            <tr className="ta-address-tr"
-                                                                                key={index}
-                                                                                onClick={() => onSelected(index)}>
-                                                                                <td>{index + 1}</td>
-                                                                                <td>{address.roadAddr}<br/><small>{address.jibunAddr}</small></td>
-                                                                                <td>{address.zipNo}</td>
-                                                                            </tr>
-                                                                        )
-                                                                    })
-                                                                    }
-                                                                </tbody>
-                                                            </table>
-                                                        </div>
+                                                    <div className="modal-footer">
+                                                        <button type="button" className="btn btn-sm btn-solid ta-btn-sm cl" data-dismiss="modal">닫기</button>
                                                     </div>
                                                 </div>
                                             </div>
+                                        </div>
+                                            
                                         </div>
                                     </div>
                                 </div>

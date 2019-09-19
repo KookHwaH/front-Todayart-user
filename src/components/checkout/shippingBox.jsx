@@ -383,16 +383,16 @@ class NewAddressBox extends React.Component{
                         </tr>
                         <tr className="addressCell">
                             <td rowSpan="3"><label htmlFor="address">주소</label></td>
-                            <td colSpan="2" className="secondTd"><input type="number" id="postalNumber" ref={this.postalNumber} placeholder="우편번호" readOnly/> </td>
+                            <td colSpan="2" className="secondTd"><input type="number" id="postalNumber" ref={this.postalNumber} placeholder="우편번호를 검색하세요" readOnly/> </td>
                             <td><button type="button" data-toggle="modal" data-target="#searchPostalNumber" className="btn btn-sm btn-solid ta-btn-sm" onClick={()=>this.onOpenModal}>우편번호검색</button></td>                            
                         </tr>
 
                         <tr>
-                            <td colSpan="3" className="secondTd"><input type="text" id="address"ref={this.address} onChange={_=>this.onChangeShippingInfo()} placeholder="도로명 주소" readOnly/></td>
+                            <td colSpan="3" className="secondTd"><input type="text" id="address"ref={this.address} placeholder="우편번호를 검색하세요" readOnly/></td>
                             
                         </tr>
                         <tr>
-                            <td colSpan="3" className="secondTd"><input type="text" id="addressDetail" ref={this.addressDetail} onChange={_=>this.onChangeShippingInfo()} placeholder="상세주소"/></td>
+                            <td colSpan="3" className="secondTd"><input type="text" id="addressDetail" ref={this.addressDetail} placeholder="상세주소를 입력하세요"/></td>
                         </tr>
                         </tbody>
                         <tfoot>
