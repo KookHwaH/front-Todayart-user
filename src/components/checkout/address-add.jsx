@@ -34,6 +34,16 @@ class AddressAdd extends Component {
         this.postCodeRegInput = React.createRef();
     }
 
+    static getDerivedStateFromProps(nextProps, prevState){
+        console.log("AdressAdd :: New Address Box :: nextProps", nextProps, "prevState", prevState);
+        if(nextProps.shippingAddress !== null) {
+            if(prevState.shippingAddress!==nextProps.shippingAddress){
+                return{shippingAddress:{...nextProps.shippingAddress}}
+            }
+        }
+        return prevState;
+    }
+
 
     render() {
         // 유효성에 관련된 메시지 CSS
@@ -156,72 +166,72 @@ class AddressAdd extends Component {
             <div>
                 {/*Dashboard section*/}
                     <div className="container">
-                                    <div className="dashboard">
-                                        <div className="box-account box-info">
-                                            <div className="box-head">
-                                                <h2>배송지 추가</h2>
-                                            </div>
+                        <div className="dashboard">
+                            <div className="box-account box-info">
+                                <div className="box-head">
+                                    <h2>배송지 추가</h2>
+                                </div>
 
-                                            <form onSubmit={e => onSearch(e)}>
-                                                <div className="row mb-3">
-                                                    <div className="col-sm-12">
-                                                        <div className="input-group form-group-control">
-                                                            <input type="text"
-                                                                   className={`${inputClassNameHelper(this.state.isAddressValid)}`}
-                                                                   name="address"
-                                                                   placeholder="배송지 주소를 입력 해 주세요"
-                                                                   ref={this.addressInput}
-                                                                   required
-                                                                   onChange={e => validateAddress(e.target.value)}
-                                                                   style={{"width":"85%"}}
-                                                            />
-                                                            <div className="input-group-append">
-                                                                <button
-                                                                    className="btn btn-outline-secondary btn-input-group-bottom"
-                                                                    type="submit">검색</button>
-                                                            </div>
-                                                        </div>
-                                                        <FormCheckText sendMsg={this.state.addressValidMsg} isCheck={this.state.isSubmitAddressValid} />
-                                                    </div>
+                                <form onSubmit={e => onSearch(e)}>
+                                    <div className="row mb-3">
+                                        <div className="col-sm-12">
+                                            <div className="input-group form-group-control">
+                                                <input type="text"
+                                                        className={`${inputClassNameHelper(this.state.isAddressValid)}`}
+                                                        name="address"
+                                                        placeholder="배송지 주소를 입력 해 주세요"
+                                                        ref={this.addressInput}
+                                                        required
+                                                        onChange={e => validateAddress(e.target.value)}
+                                                        style={{"width":"85%"}}
+                                                />
+                                                <div className="input-group-append">
+                                                    <button
+                                                        className="btn btn-outline-secondary btn-input-group-bottom"
+                                                        type="submit">검색</button>
                                                 </div>
-                                            </form>
-                                            <div className="ta-address-result-box">
-                                                <div className="row">
-                                                    <div className="col-sm-12">
-                                                        <div className="table-responsive">
-                                                            <table className="table table-responsive-xs">
-                                                                <thead>
-                                                                    <tr>
-                                                                        <th>No</th>
-                                                                        <th>주소</th>
-                                                                        <th>우편번호</th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody>
-                                                                    {this.state.totalCount <= 0 ? <tr>
-                                                                        <td colSpan="3" className="ta-address-none">검색결과가 존재하지 않습니다.</td>
-                                                                    </tr> : this.state.addresses.map((address, index) => {
-                                                                        return (
-                                                                            <tr className="ta-address-tr"
-                                                                                key={index}
-                                                                                onClick={() => onSelected(index)} data-dismiss="modal">
-                                                                                <td>{index + 1}</td>
-                                                                                <td>{address.roadAddr}<br/><small>{address.jibunAddr}</small></td>
-                                                                                <td>{address.zipNo}</td>
-                                                                            </tr>
-                                                                        )
-                                                                    })
-                                                                    }
-                                                                </tbody>
-                                                            </table>
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                            </div>
+                                            <FormCheckText sendMsg={this.state.addressValidMsg} isCheck={this.state.isSubmitAddressValid} />
+                                        </div>
+                                    </div>
+                                </form>
+                                <div className="ta-address-result-box">
+                                    <div className="row">
+                                        <div className="col-sm-12">
+                                            <div className="table-responsive">
+                                                <table className="table table-responsive-xs">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>No</th>
+                                                            <th>주소</th>
+                                                            <th>우편번호</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {this.state.totalCount <= 0 ? <tr>
+                                                            <td colSpan="3" className="ta-address-none">검색결과가 존재하지 않습니다.</td>
+                                                        </tr> : this.state.addresses.map((address, index) => {
+                                                            return (
+                                                                <tr className="ta-address-tr"
+                                                                    key={index}
+                                                                    onClick={() => onSelected(index)} data-dismiss="modal">
+                                                                    <td>{index + 1}</td>
+                                                                    <td>{address.roadAddr}<br/><small>{address.jibunAddr}</small></td>
+                                                                    <td>{address.zipNo}</td>
+                                                                </tr>
+                                                            )
+                                                        })
+                                                        }
+                                                    </tbody>
+                                                </table>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </div>
 
         )
     }

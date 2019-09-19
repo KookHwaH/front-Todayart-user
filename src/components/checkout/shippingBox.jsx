@@ -331,12 +331,13 @@ class NewAddressBox extends React.Component{
     }
 
     static getDerivedStateFromProps(nextProps, prevState){
-        console.log(nextProps, prevState);
+        console.log("New Address Box :: nextProps", nextProps, "prevState", prevState);
         if(nextProps.shippingAddress !== null) {
-            if(prevState.shippingAddress.address!==nextProps.shippingAddress.address){
-                return{shippingAddress:{...prevState.shippingAddress, address:nextProps.shippingAddress.address, postalNumber:nextProps.shippingAddress.postalNumber}}
+            if(prevState.shippingAddress!==nextProps.shippingAddress){
+                return{shippingAddress:{...nextProps.shippingAddress}}
             }
         }
+        return prevState;
     }
 
     shouldComponentUpdate(nextProps, nextState){
@@ -359,11 +360,13 @@ class NewAddressBox extends React.Component{
 
     onCloseModal = () => {
         this.setState({ open: false });
-        this.address.current.value= this.state.shippingAddress.address
-        this.postalNumber.current.value = this.state.shippingAddress.postalNumber
     };
 
     render(){
+        if(this.address.current!==null&&this.postalNumber.current!==null){
+        this.address.current.value= this.state.shippingAddress.address
+        this.postalNumber.current.value = this.state.shippingAddress.postalNumber
+        }
         return(
             <div>
                     <table>
@@ -375,8 +378,8 @@ class NewAddressBox extends React.Component{
                         <tr>
                             <td><label htmlFor="consigneePhone">연락처</label></td>
                             <td className="secondTd" colSpan="3"><input type="tel" id="consigneePhone"  ref={this.phone1} onChange={_=>this.onChangeShippingInfo()}/>
-                            <input type="tel" id="consigneePhone"  ref={this.phone2} onChange={_=>this.onChangeShippingInfo()} />
-                            <input type="tel" id="consigneePhone"   ref={this.phone3}onChange={_=>this.onChangeShippingInfo()} /></td>
+                            <input type="tel" id="consigneePhone" ref={this.phone2} onChange={_=>this.onChangeShippingInfo()} />
+                            <input type="tel" id="consigneePhone" ref={this.phone3} onChange={_=>this.onChangeShippingInfo()} /></td>
                         </tr>
                         <tr className="addressCell">
                             <td rowSpan="3"><label htmlFor="address">주소</label></td>

@@ -124,33 +124,11 @@ class ProductItem extends Component {
        }           
                
 
-
-        // let RatingStars = []
-        // for(var i = 0; i < product.rating; i++) {
-        //     RatingStars.push(<i className="fa fa-star" key={i}></i>)
-        // }
         return (
                 <div className="product-box">
                     <div className="img-wrapper">
-                        <div className="lable-block">
-                            {/* {(product.new == true)? <span className="lable3">new</span> : ''} */}
-
-                            {/* 상품상세 아래 상품박스에 on sale이라고 박혀있는 부분 */}
-                            {/* {(product.sale == true)? <span className="lable4">on sale</span> : ''} */}
-
-                        </div>
                         <div className="front">
 
-                            {/* 상품상세 아래 상품박스 상품 이미지 부분  */}
-                            {/* <Link to={`${process.env.PUBLIC_URL}/left-sidebar/product/${item.productId}`} ><img
-                                src={`${
-                                    product.variants?
-                                        this.state.image?this.state.image:product.variants[0].images
-                                        :product.pictures[0]
-                                    }`}
-                                className="img-fluid"
-                                alt="" /></Link> */}
-                                
                                 {/* 이미지 */}
                                 <Link to={{pathname :`${process.env.PUBLIC_URL}/product/${item.productId}`,
                                 state :{ item:this.props.item }}}>
@@ -172,32 +150,14 @@ class ProductItem extends Component {
                                onClick={this.onOpenModal}><i className="fa fa-search" style={{"color": "white", "cursor": "pointer"}} aria-hidden="true" /></a>
                            
                         </div>
-                        {/* {product.variants?
-                        <ul className="product-thumb-list">
-                            { product.variants.map((vari, i) =>
-                                <li className={`grid_thumb_img ${(vari.images === this.state.image)?'active':''}`} key={i}>
-                                    <a href="#" title="Add to Wishlist">
-                                        <img src={`${vari.images}`} onClick={() => this.onClickHandle(vari.images)} />
-                                    </a>
-                                </li>)}
-                        </ul>:''} */}
 
                     </div>
                     <div className="product-detail">
                         <div>
                             <div className="rating">
-
-                                {/* 상품상세페이지 아래 상품박스 별점 부분 */}
-                                {/* {RatingStars} */}
-                            </div>
-                            {/* <Link to={`${process.env.PUBLIC_URL}/left-sidebar/product/${product.id}`}>   
-                            </Link> */}
-                            {/* <h6>{item.productName}</h6> */}
-                            
                             <Link to={{pathname :`${process.env.PUBLIC_URL}/product/${item.productId}`,
                                 state :{ item:this.props.item }}}>
                             <h4>
-                            {/* {symbol}{product.price} */}
                                 <span className="money">{item.productName}</span>
                             </h4>
                             </Link>
@@ -266,6 +226,7 @@ class ProductItem extends Component {
                         </div>
                     </Modal>
                 </div>
+            </div>
         )
     }
 }
