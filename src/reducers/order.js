@@ -50,7 +50,8 @@ const order = (state=initialStateOrder, action) =>{
                     return{
                         ...state,
                         addresses:data,
-                        mainAddress:data.filter((item)=>item.mainAddress==='y')
+                        mainAddress:data.filter((item)=>item.mainAddress==='y'),
+                        shippingAddress:data.filter((item)=>item.mainAddress==='y')
                     }
                 }
             }

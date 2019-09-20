@@ -16,36 +16,42 @@ class ShippingBox extends React.Component{
             addresses:props.member.memberAddresses?props.member.memberAddresses:null,
             mainAddress:props.member.memberAddresses?props.member.memberAddresses.filter(item=>item.mainAddress==='y')[0]:null,
             shippingAddress:props.member.memberAddresses?props.member.memberAddresses.filter(item=>item.mainAddress==='y')[0]:null,
-            checkedAddress:props.member.memberAddresses?props.member.memberAddresses.filter(item=>item.mainAddress==='y')[0]:null,
+            checkedAddress:props.member.memberAddresses
+                                ?props.member.memberAddresses.filter(item=>item.mainAddress==='y')[0]
+                                ?props.member.memberAddresses.filter(item=>item.mainAddress==='y')[0]
+                                :null
+                            :null,
+            realName:props.member.realName?props.member.realName:null,
+            phone:props.member.phone?props.member.phone:null,
+            email:props.member.username?props.member.username:null,
             selectAddress:"main",
             open:false,
             fetchAddress:props.fetchShippingAddress
 
         }
         
-        this.props.getAddress();
+        this.props.getAddress().then(response=>{
+            if(response.type===ActionTypes.GET_ADDRESS_SUCCESS){
+                if(Object.prototype.toString.call(this.state.shippingAddress) === '[object Array]'){
+                    console.log("check1")
+                    this.state.fetchAddress(this.state.shippingAddress[0])
+                }        
+            }
+        });
     }
 
     static getDerivedStateFromProps(nextProps, prevState){
-        console.log("nextProps", nextProps);
-        console.log("prevState", prevState);
-
-        if(prevState.mainAddress !== null) {
-            console.log("if들어옴", nextProps, prevState);
-            // alert("등록된 배송지가 없어요! 배송지 등록 후 다시 결제 시도 해 주세요");
-            // return nextProps.history.push("/account/addresses");
-        }
-
-        if(Object.prototype.toString.call(prevState.shippingAddress) === '[object Array]'){
-            prevState.fetchAddress(prevState.shippingAddress[0])
-        }
-
-        if(nextProps.shippingAddress!==prevState.shippingAddress){
+      if(nextProps.shippingAddress!==prevState.shippingAddress){
+            if(nextProps.shippingAddress===undefined){
+                return {shippingAddress:{...prevState.shippingAddress[0]} }
+            }
             return {shippingAddress:nextProps.shippingAddress, addresses:nextProps.order.addresses, mainAddress:nextProps.order.mainAddress}
         }
+
         if(nextProps.addresses!==prevState.addresses){
             return {addresses:nextProps.order.addresses, mainAddress:nextProps.order.mainAddress}
         }
+
         return prevState
     }
 
@@ -54,9 +60,17 @@ class ShippingBox extends React.Component{
     }
 
     selectShippingAddress(){
-        console.log("select")
-        this.setState({shippingAddress:this.state.checkedAddress, selectAddress:'main'})
-        this.state.fetchAddress(this.state.checkedAddress)
+        this.setState({selectAddress:'main'})
+        if(this.state.checkedAddress!==null){
+            console.log("HEKJSE", this.state.checkedAddress)
+            this.state.fetchAddress({...this.state.shippingAddress, 
+                address:this.state.checkedAddress.address, 
+                addressDetail:this.state.checkedAddress.addressDetail,
+                postalNumber:this.state.checkedAddress.postalNumber,
+                addressId:this.state.checkedAddress.addressId,
+                consignee:this.state.checkedAddress.consignee?this.state.checkedAddress.consignee:this.state.realName,
+                consigneePhone:this.state.checkedAddress.consigneePhone?this.state.checkedAddress.consigneePhone:this.state.phone})
+        }
     }
 
     onOpenModal = () => {
@@ -68,8 +82,7 @@ class ShippingBox extends React.Component{
     };
 
     render(){
-        const {member, mainAddress} = this.state;
-        const {realName, phone, email} = member;
+        const {realName, phone, email, mainAddress} = this.state;
         return(
             <div className="col-lg-6 col-sm-12 col-xs-12">
                 <div className="checkout-title">
@@ -208,7 +221,9 @@ class ShippingBox extends React.Component{
                                 {this.state.mainAddress?
                                     <AsyncMainAddressBox mainAddress={this.state.mainAddress}
                                                          shippingAddress={this.state.shippingAddress}
-                                                         fetchAddress={this.state.fetchAddress} />
+                                                         fetchAddress={this.state.fetchAddress}
+                                                         consignee={this.state.realName}
+                                                         consigneePhone={this.state.phone} />
                                                          : "로딩중입니다"
                                 }
                             </div>
@@ -229,42 +244,61 @@ class AsyncMainAddressBox extends React.Component{
     constructor(props){
         super(props)
         this.state={
-            mainAddress : props.mainAddress[0],
-            shippingAddress:props.mainAddress[0],
+            mainAddress : props.mainAddress,
+            shippingAddress:props.shippingAddress,
+            consignee:props.consignee,
+            consigneePhone:props.consigneePhone,
             fetchAddress:props.fetchAddress
         }
 
         this.consignee=React.createRef();
-        this.phone1=React.createRef();
-        this.phone2=React.createRef();
-        this.phone3=React.createRef();
+        this.consigneePhone=React.createRef();
     }
 
     static getDerivedStateFromProps(nextProps, prevState){
         if (prevState.shippingAddress !== null && prevState.shippingAddress !== undefined
             && nextProps.shippingAddress !== null && nextProps.shippingAddress !== undefined) {
-            console.log("디폴트>>>",prevState.shippingAddress, nextProps.shippingAddress)
             if((prevState.shippingAddress.address !== null && prevState.shippingAddress.address !== undefined)
                 && (nextProps.shippingAddress.address !== null && nextProps.shippingAddress.address !== undefined))
-            {
-                if(prevState.shippingAddress.address!==nextProps.shippingAddress.address){
-                    return {shippingAddress:nextProps.shippingAddress}
+                {
+                    if(prevState.shippingAddress!==nextProps.shippingAddress){
+                        return {shippingAddress:nextProps.shippingAddress}
                 }
             }
-            return null;
+            return {shippingAddress:nextProps.shippingAddress};
         }
+        return null
     }
+
+    
     shouldComponentUpdate(nextProps, nextState){
-        if(this.state.shippingAddress!==nextState.shippingAddress){
+        if(this.state.shippingAddress!==nextProps.shippingAddress){
             return true
         }
         return false
     }
+    
+    getSnapshotBeforeUpdate(prevProps, prevState){
+        if(this.props.shippingAddress.consignee===undefined){
+            if(this.props.shippingAddress.consigneePhone===undefined){
+                console.log("check2")
+                return prevState.fetchAddress({...this.state.shippingAddress, consignee:prevState.consignee, consigneePhone:prevState.consigneePhone})
+            }else{
+                return prevState.fetchAddress({...this.state.shippingAddress, consignee:prevState.consignee})
+            }
+        }else if(this.props.shippingAddress.consigneePhone===undefined){
+            return prevState.fetchAddress({...this.state.shippingAddress, consigneePhone:prevState.consigneePhone})
+        }
+        return null
+    }
+
+    componentDidUpdate(){
+
+    }
 
     onChangeShippingInfo(){
-        
         const name = this.consignee.current.value.trim();
-        const phone = this.phone1.current.value.trim()+'-'+this.phone2.current.value.trim()+'-'+this.phone3.current.value.trim()
+        const phone = this.consigneePhone.current.value.trim()
         const shippingAddress = {...this.state.shippingAddress, consignee:name, consigneePhone:phone}
         this.state.fetchAddress(shippingAddress)
     }
@@ -274,37 +308,62 @@ class AsyncMainAddressBox extends React.Component{
     render(){
         return(
             <div>
-                {this.state.shippingAddress?
-            <table>
-                <tbody className="addressTable">
-                    <tr>
-                        <td>수령인</td>
-                        {this.state.shippingAddress!==null&&this.state.shippingAddress.consignee!==undefined&&this.state.shippingAddress.consignee!==null?
-                        <td className="secondTd">{this.state.shippingAddress.consignee}</td>:
-                        <td className="secondTd"><input type="text" id="consignee" ref={this.consignee} onChange={_=>this.onChangeShippingInfo()}/></td>}
-                    </tr>
-                    <tr>
-                        <td>연락처</td>
-                        {this.state.shippingAddress!==null&&this.state.shippingAddress.consigneePhone!==undefined&&this.state.shippingAddress.consigneePhone!==null?
-                        <td className="secondTd">{this.state.shippingAddress.consigneePhone}</td>:
-                        <div>
-                        <td className="secondTd" colSpan="3"><input type="tel" id="consigneePhone" ref={this.phone1} onChange={_=>this.onChangeShippingInfo()} required/><input type="tel" id="consigneePhone"ref={this.phone2} onChange={_=>this.onChangeShippingInfo()} required/><input type="tel" id="consigneePhone"ref={this.phone3} onChange={_=>this.onChangeShippingInfo()} required/></td>
-                        </div>}
-                    </tr>
-                    <tr className="addressCell">
-                        <td rowSpan="3">주소</td>
-                        <td className="secondTd">{this.state.shippingAddress.postalNumber}</td>
-                    </tr>
-                    <tr>
-                        <td className="secondTd">{this.state.shippingAddress.address}</td>
-                        
-                    </tr>
-                    <tr>
-                        <td className="secondTd">{this.state.shippingAddress.addressDetail}</td>
-                    </tr>
-                </tbody>
-            </table>
-                :<div className="ta-address-none" style={{"marginTop":"30px","marginBottom":"10px", "textAlign":"left", "paddingLeft":"10px"}}>등록된 배송지가 없어요!</div>
+                {this.state.mainAddress!==null&&this.state.mainAddress!==undefined?
+                    this.state.shippingAddress!==null&&this.state.shippingAddress!==undefined?
+                    <table>
+                        <tbody className="addressTable">
+                            <tr>
+                                <td>수령인</td>
+                                {this.state.shippingAddress!==null&&this.state.shippingAddress.consignee!==undefined&&this.state.shippingAddress.consignee!==null?
+                                <td className="secondTd">
+                                    <input type="text" 
+                                    id="consignee" 
+                                    ref={this.consignee} 
+                                    defaultValue={this.state.shippingAddress.consignee} 
+                                    placeholder="수령인을 입력 해 주세요" 
+                                    onChange={_=>this.onChangeShippingInfo()}/>
+                                </td>
+                                :
+                                <td className="secondTd">
+                                    <input type="text" id="consignee" ref={this.consignee}
+                                    placeholder="수령인을 입력 해 주세요" 
+                                    onChange={_=>this.onChangeShippingInfo()}/>
+                                </td>}
+                            </tr>
+                            <tr>
+                                <td>연락처</td>
+                                {this.state.shippingAddress!==null&&this.state.shippingAddress.consigneePhone!==undefined&&this.state.shippingAddress.consigneePhone!==null?
+                                <td className="secondTd">
+                                    <input type="text" 
+                                    id="consigneePhone" 
+                                    ref={this.consigneePhone} 
+                                    defaultValue={this.state.shippingAddress.consigneePhone}
+                                    placeholder="연락처를 입력 해 주세요" 
+                                    onChange={_=>this.onChangeShippingInfo()}/>
+                                </td>:
+                                <div>
+                                <td className="secondTd" colSpan="3">
+                                    <input type="tel" id="consigneePhone" ref={this.consigneePhone}
+                                    placeholder="연락처를 입력 해 주세요" 
+                                    onChange={_=>this.onChangeShippingInfo()} required/>
+                                </td>
+                                </div>}
+                            </tr>
+                            <tr className="addressCell">
+                                <td rowSpan="3">주소</td>
+                                <td className="secondTd">{this.state.shippingAddress.postalNumber}</td>
+                            </tr>
+                            <tr>
+                                <td className="secondTd">{this.state.shippingAddress.address?this.state.shippingAddress.address:"주소를 선택해주세요"}</td>
+                                
+                            </tr>
+                            <tr>
+                                <td className="secondTd">{this.state.shippingAddress.addressDetail}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    :<div className="ta-address-none" style={{"marginTop":"30px","marginBottom":"10px", "textAlign":"left", "paddingLeft":"10px"}}>주소를 선택해주세요!</div>
+                :<div className="ta-address-none" style={{"marginTop":"30px","marginBottom":"10px", "textAlign":"left", "paddingLeft":"10px"}}>등록된 메인 배송지가 없어요!</div>
                 }
             </div>
         )
@@ -317,14 +376,12 @@ class NewAddressBox extends React.Component{
         this.state={
             addAddress:false,
             fetchAddress:props.fetchAddress,
-            shippingAddress:{consignee:'', consigneePhone:'', address:'', addressDetail:'', postalNumber:''},
+            shippingAddress:props.shippingAddress?props.shippingAddress:{consignee:'', consigneePhone:'', address:'', addressDetail:'', postalNumber:''},
             open:false
         }
 
         this.consignee=React.createRef()
-        this.phone1=React.createRef()
-        this.phone2=React.createRef()
-        this.phone3=React.createRef()
+        this.consigneePhone=React.createRef()
         this.postalNumber=React.createRef()
         this.addressDetail=React.createRef()
         this.address=React.createRef()
@@ -346,7 +403,7 @@ class NewAddressBox extends React.Component{
 
     onChangeShippingInfo(){
         const name = this.consignee.current.value.trim();
-        const phone = this.phone1.current.value.trim()+'-'+this.phone2.current.value.trim()+'-'+this.phone3.current.value.trim()
+        const phone = this.consigneePhone.current.value.trim()
         const postalNumber=this.postalNumber.current.value.trim()
         const address = this.address.current.value.trim()
         const addressDetail = this.addressDetail.current.value.trim()
@@ -373,26 +430,35 @@ class NewAddressBox extends React.Component{
                         <tbody>
                         <tr>
                         <td><label htmlFor="consignee">수령인</label></td>
-                        <td colSpan="3" className="secondTd"><input type="text" id="consignee"  ref={this.consignee} onChange={_=>this.onChangeShippingInfo()}/></td>
+                        <td colSpan="3" className="secondTd">
+                            <input type="text" 
+                            id="consignee"  
+                            ref={this.consignee} 
+                            onChange={_=>this.onChangeShippingInfo()}
+                            placeholder="수령인을 입력 해 주세요"/></td>
                         </tr>
                         <tr>
                             <td><label htmlFor="consigneePhone">연락처</label></td>
-                            <td className="secondTd" colSpan="3"><input type="tel" id="consigneePhone"  ref={this.phone1} onChange={_=>this.onChangeShippingInfo()}/>
-                            <input type="tel" id="consigneePhone" ref={this.phone2} onChange={_=>this.onChangeShippingInfo()} />
-                            <input type="tel" id="consigneePhone" ref={this.phone3} onChange={_=>this.onChangeShippingInfo()} /></td>
+                            <td className="secondTd" colSpan="3">
+                                <input type="tel" 
+                                id="consigneePhone"  
+                                ref={this.consigneePhone} 
+                                onChange={_=>this.onChangeShippingInfo()}
+                                placeholder="연락처를 입력 해 주세요"/>
+                            </td>
                         </tr>
                         <tr className="addressCell">
                             <td rowSpan="3"><label htmlFor="address">주소</label></td>
-                            <td colSpan="2" className="secondTd"><input type="number" id="postalNumber" ref={this.postalNumber} placeholder="우편번호를 검색하세요" readOnly/> </td>
+                            <td colSpan="2" className="secondTd"><input type="number" id="postalNumber" ref={this.postalNumber} placeholder="우편번호를 선택 해 주세요" readOnly/> </td>
                             <td><button type="button" data-toggle="modal" data-target="#searchPostalNumber" className="btn btn-sm btn-solid ta-btn-sm" onClick={()=>this.onOpenModal}>우편번호검색</button></td>                            
                         </tr>
 
                         <tr>
-                            <td colSpan="3" className="secondTd"><input type="text" id="address"ref={this.address} placeholder="우편번호를 검색하세요" readOnly/></td>
+                            <td colSpan="3" className="secondTd"><input type="text" id="address" ref={this.address} placeholder="배송지 주소를 선택 해 주세요" readOnly/></td>
                             
                         </tr>
                         <tr>
-                            <td colSpan="3" className="secondTd"><input type="text" id="addressDetail" ref={this.addressDetail} placeholder="상세주소를 입력하세요"/></td>
+                            <td colSpan="3" className="secondTd"><input type="text" id="addressDetail" ref={this.addressDetail} placeholder="상세주소를 입력 해 주세요"/></td>
                         </tr>
                         </tbody>
                         <tfoot>
