@@ -44,7 +44,9 @@ class ShippingBox extends React.Component{
         console.log("check aedfkals", nextProps, prevState)
       if(nextProps.shippingAddress!==prevState.shippingAddress){
             if(nextProps.shippingAddress===undefined){
+                if(prevState.shippingAddress[0]!==null){
                 return {shippingAddress:{...prevState.shippingAddress[0]} }
+                }
             }
             return {shippingAddress:nextProps.shippingAddress, addresses:nextProps.order.addresses, mainAddress:nextProps.order.mainAddress}
         }
@@ -281,20 +283,6 @@ class AsyncMainAddressBox extends React.Component{
         return false
     }
     
-    getSnapshotBeforeUpdate(prevProps, prevState){
-        if(this.props.shippingAddress.consignee===undefined){
-            if(this.props.shippingAddress.consigneePhone===undefined){
-                console.log("check2")
-                return prevState.fetchAddress({...this.state.shippingAddress, consignee:prevState.consignee, consigneePhone:prevState.consigneePhone})
-            }else{
-                return prevState.fetchAddress({...this.state.shippingAddress, consignee:prevState.consignee})
-            }
-        }else if(this.props.shippingAddress.consigneePhone===undefined){
-            return prevState.fetchAddress({...this.state.shippingAddress, consigneePhone:prevState.consigneePhone})
-        }
-        return null
-    }
-
     componentDidUpdate(){
 
     }
@@ -318,7 +306,7 @@ class AsyncMainAddressBox extends React.Component{
         return(
             <div>
                 {this.state.mainAddress!==null&&this.state.mainAddress!==undefined?
-                    this.state.shippingAddress!==null&&this.state.shippingAddress!==undefined?
+                    this.state.shippingAddress!==null&&this.state.shippingAddress!==undefined&&this.state.shippingAddress.address!==undefined?
                     <table>
                         <tbody className="addressTable">
                             <tr>
@@ -327,7 +315,7 @@ class AsyncMainAddressBox extends React.Component{
                                     <input type="text" 
                                     id="consignee" 
                                     ref={this.consignee} 
-                                    defaultValue={this.state.shippingAddress.consignee} 
+                                    defaultValue={this.state.shippingAddress.consignee?this.state.shippingAddress.consignee:this.state.consignee}
                                     placeholder="수령인을 입력 해 주세요" 
                                     onChange={_=>this.onChangeShippingInfo()}/>
                                 </td>
@@ -338,7 +326,7 @@ class AsyncMainAddressBox extends React.Component{
                                     <input type="text" 
                                     id="consigneePhone" 
                                     ref={this.consigneePhone} 
-                                    defaultValue={this.state.shippingAddress.consigneePhone}
+                                    defaultValue={this.state.shippingAddress.consigneePhone?this.state.shippingAddress.consigneePhone:this.state.consigneePhone}
                                     placeholder="연락처를 입력 해 주세요" 
                                     onChange={_=>this.onChangeShippingInfo()}/>
                                 </td>

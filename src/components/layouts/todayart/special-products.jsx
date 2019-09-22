@@ -67,8 +67,7 @@ class SpecialProducts extends Component {
             this.props.addWishlist(item)
                 .then(response=>{
                 if(response.type==ActionTypes.ADD_WISHLIST_SUCCESS){
-                    toast.info("작품이 찜하기에 추가되었습니다");       
-                    console.log('찜하기성공!')  
+                    toast.info("작품이 찜하기에 추가되었습니다");         
                 } 
             }).catch(error=>{
                 console.log('error >>', error)
@@ -102,12 +101,11 @@ class SpecialProducts extends Component {
                 </div>
                 <section className="section-b-space p-t-0">
                     <div className="container">
-                        <Tabs className="theme-tab">
-                            <TabList  className="tabs tab-title">
-                                <Tab>NEW PRODUCTS</Tab>                               
-                            </TabList>
+                        <div className="theme-tab">
+                            <div  className="tabs tab-title">
+                                <span>NEW PRODUCTS</span>                               
+                            </div>
 
-                            <TabPanel>
                                 <div className="no-slider row">
                                     { this.state.randomItem.slice(0, 12).map((item, index) =>
                                         <ProductItem item={item} symbol={symbol}
@@ -115,19 +113,8 @@ class SpecialProducts extends Component {
                                                      onAddToCartClicked={asyncAddCart} key={index} /> )
                                     }
                                 </div>
-                            </TabPanel>
-                            <TabPanel>  
-                                <div className="no-slider row">
-                                    { items.map((item, index ) =>
-                                        <ProductItem item={item} symbol={symbol}
-                                                     onAddToCompareClicked={() => addToCompare(item)}
-                                                     onAddToWishlistClicked={() => addWishilist(item)}
-                                                     onAddToCartClicked={asyncAddCart} key={index} /> )
-                                    }
-                                </div>
-                            </TabPanel>
-                           
-                        </Tabs>
+                            
+                        </div>
                         <ToastContainer/>
                     </div>
                 </section>

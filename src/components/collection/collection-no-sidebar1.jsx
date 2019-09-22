@@ -22,13 +22,12 @@ class CollectionCategory extends Component {
 
     }
 
-    getDerivedStateFromProps(nextProps, prevState){
+    static getDerivedStateFromProps(nextProps, prevState){
         if(prevState.id!==nextProps.match.params){
             return {id:nextProps.match.params}}
         return prevState
     }
     shouldComponentUpdate(nextProps, nextState, nextContext) {
-        console.log("shouldComponentUpdate111111", this.state, nextState, this.props, nextProps);
         if(this.props.match.params.id!==nextProps.match.params.id){
             return true
         }
@@ -36,7 +35,6 @@ class CollectionCategory extends Component {
     }
 
     getSnapshotBeforeUpdate(prevProps, prevState) {
-        console.log("getSnapshotBeforeUpdate", prevProps, this.props)
         if (this.props.match.params.id == 0){
             this.props.fetchArtwork();
         }else {
@@ -46,25 +44,16 @@ class CollectionCategory extends Component {
         return null
     }
 
+    componentDidUpdate(){}
+
     LayoutViewClicked(colums) {
         this.setState({
             layoutColumns:colums
         })
     }
 
-    // componentDidUpdate(prevProps, prevState, snapshot) {
-    //     const { id } = this.props.match.params;
-    //     console.log("id", id);
-    //     if ( id == 0){
-    //         this.props.fetchArtwork();
-    //     }else {
-    //         this.props.fetchCategory(id);
-    //     }
-    // }
-
     componentDidMount() {
         const { id } = this.props.match.params;
-        console.log("DIdMount", id);
         if ( id == 0){
             this.props.fetchArtwork();
         }else {
@@ -73,7 +62,6 @@ class CollectionCategory extends Component {
     }
 
     render(){
-        console.log('render!!!!!')
         const { id } = this.props.match.params;
         const { items } = this.props;
         return (
@@ -136,38 +124,6 @@ class CollectionCategory extends Component {
         )
     }
 }
-// function CollectionCategory(props) {
-//     const { id } = props.match.params;
-//     console.log('CollectionCategory >>  ', id);
-
-//     return (
-//         <div>{id}</div>
-//     );
-// }
-// class CollectionCategory extends React.Component {
-//     constructor(props) {
-//         super(props);
-//         const { id } = props.match.params;
-//         console.log('CollectionCategory 1 >>  ', id);
-//     }
-
-//     shouldComponentUpdate(nextProps, nextState, nextContext) {
-//         const { id } = nextProps.match.params;
-//         if (this.props !== nextProps) {
-//             console.log('CollectionCategory 2 >>  ', id);
-//             return true;
-//         }
-//         return false;
-//     }
-
-//     render() {
-//         const { id } = this.props.match.params;
-//         return (<div>{id}</div>);
-//     }
-// }
-
-
-
 
 const mapStateToProps = (state) => ({
     wishlist: state.wishlist.items,

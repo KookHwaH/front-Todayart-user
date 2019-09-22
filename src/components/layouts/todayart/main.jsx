@@ -101,7 +101,7 @@ class Todayart extends Component {
                             <div className="row">
                                 <div className="col">
                                     <div className="banner-contain">
-                                        <h2>2019.09.26</h2>
+                                        <h2>2019.10.26</h2>
                                         <h3>TodayArt Season 2</h3>
                                         <h4>COMING SOON!!!</h4>
                                     </div>

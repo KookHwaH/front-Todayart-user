@@ -18,7 +18,6 @@ class ProductListing1 extends Component {
 
     constructor (props) {
         super (props);
-        console.log("props", props);
         this.state = {
             limit: 0,
             hasMoreItems: true,
@@ -34,15 +33,7 @@ class ProductListing1 extends Component {
     }
 
     componentWillReceiveProps(nextProps){
-        console.log('언제 실행이될거니')
-       // console.log(this.state.limit , this.props.items.length)
-        
-        
-        console.log('wishlist>>>>',this.props.wishlist, nextProps.wishlist)
-
         if (this.state.limit < this.props.items.length) {
-            console.log('여기는들어오지')
-            console.log(this.state.limit , this.props.items.length)
             this.setState({
                 ...this.state,
                 limit: this.state.limit + 4,
@@ -50,25 +41,20 @@ class ProductListing1 extends Component {
 
             })
         }else if(this.state.limit >= this.props.items.length){
-            console.log('여기아예 안들어오지')
-            console.log(this.state.limit , this.props.items.length)
             this.setState({
                 ...this.state,
                 limit: 0,
                 hasMoreItems: true
             })
         }else if(this.props.wishlist !== nextProps.wishlist){
-            console.log('아무것도 하지마라')
         }
     }
 
     fetchMoreItems = () => {
-        console.log('사실여기 걸리는거니')
         if (this.state.limit >= this.props.items.length) {
             this.setState({
                 ...this.state,
                 hasMoreItems: false });
-            // return;
         }else{
             setTimeout(() => {
                 this.setState({
@@ -101,7 +87,6 @@ class ProductListing1 extends Component {
                 .then(response=>{
                 if(response.type==ActionTypes.ADD_WISHLIST_SUCCESS){
                     toast.info("작품이 찜하기에 추가되었습니다");       
-                    console.log('찜하기성공!')    
                 }
             }).catch(error=>{
                 console.log('error >>', error)
