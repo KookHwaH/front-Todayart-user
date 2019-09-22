@@ -41,6 +41,7 @@ class ShippingBox extends React.Component{
     }
 
     static getDerivedStateFromProps(nextProps, prevState){
+        console.log("check aedfkals", nextProps, prevState)
       if(nextProps.shippingAddress!==prevState.shippingAddress){
             if(nextProps.shippingAddress===undefined){
                 return {shippingAddress:{...prevState.shippingAddress[0]} }
@@ -274,6 +275,8 @@ class AsyncMainAddressBox extends React.Component{
     shouldComponentUpdate(nextProps, nextState){
         if(this.state.shippingAddress!==nextProps.shippingAddress){
             return true
+        }else if(this.state.shippingAddress!==nextState.shippingAddress){
+            return true
         }
         return false
     }
@@ -306,6 +309,12 @@ class AsyncMainAddressBox extends React.Component{
     
 
     render(){
+        if(this.consignee.current!==null&&this.state.shippingAddress.consingee!==null){
+            this.consignee.current.value= this.state.shippingAddress.consignee
+            }
+        if(this.consigneePhone.current!==null&&this.state.shippingAddress.consingeePhone!==null){
+            this.consigneePhone.current.value= this.state.shippingAddress.consigneePhone
+            }
         return(
             <div>
                 {this.state.mainAddress!==null&&this.state.mainAddress!==undefined?
@@ -314,7 +323,6 @@ class AsyncMainAddressBox extends React.Component{
                         <tbody className="addressTable">
                             <tr>
                                 <td>수령인</td>
-                                {this.state.shippingAddress!==null&&this.state.shippingAddress.consignee!==undefined&&this.state.shippingAddress.consignee!==null?
                                 <td className="secondTd">
                                     <input type="text" 
                                     id="consignee" 
@@ -323,16 +331,9 @@ class AsyncMainAddressBox extends React.Component{
                                     placeholder="수령인을 입력 해 주세요" 
                                     onChange={_=>this.onChangeShippingInfo()}/>
                                 </td>
-                                :
-                                <td className="secondTd">
-                                    <input type="text" id="consignee" ref={this.consignee}
-                                    placeholder="수령인을 입력 해 주세요" 
-                                    onChange={_=>this.onChangeShippingInfo()}/>
-                                </td>}
                             </tr>
                             <tr>
                                 <td>연락처</td>
-                                {this.state.shippingAddress!==null&&this.state.shippingAddress.consigneePhone!==undefined&&this.state.shippingAddress.consigneePhone!==null?
                                 <td className="secondTd">
                                     <input type="text" 
                                     id="consigneePhone" 
@@ -340,14 +341,7 @@ class AsyncMainAddressBox extends React.Component{
                                     defaultValue={this.state.shippingAddress.consigneePhone}
                                     placeholder="연락처를 입력 해 주세요" 
                                     onChange={_=>this.onChangeShippingInfo()}/>
-                                </td>:
-                                <div>
-                                <td className="secondTd" colSpan="3">
-                                    <input type="tel" id="consigneePhone" ref={this.consigneePhone}
-                                    placeholder="연락처를 입력 해 주세요" 
-                                    onChange={_=>this.onChangeShippingInfo()} required/>
                                 </td>
-                                </div>}
                             </tr>
                             <tr className="addressCell">
                                 <td rowSpan="3">주소</td>
